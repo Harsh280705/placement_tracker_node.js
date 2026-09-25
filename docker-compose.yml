@@ -1,0 +1,29 @@
+# Placement Tracker (Node.js) — full stack in ONE container.
+# Start:  docker compose up --build
+# App:    http://localhost:8080
+# Stop:   docker compose down   (no -v: keeps the pgdata volume)
+#
+# Single service `app` runs NGINX (:8080, public entry) + Node.js/Express API
+# (127.0.0.1:3000, internal) + PostgreSQL 16 (127.0.0.1:5432, internal) +
+# the Vue production bundle (served by NGINX as static files).
+# Data persists in the same `pgdata` volume at /var/lib/postgresql/data.
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-placement_tracker}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:8080/api/applications || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+volumes:
+  pgdata:
