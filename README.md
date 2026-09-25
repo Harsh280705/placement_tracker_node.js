@@ -54,17 +54,6 @@ and copies `Applications` rows (preserving ids) ONLY when the new table is
 empty — idempotent, never duplicates, never touches `Applications`. If no
 legacy data exists (fresh volume), the 3 reference sample records are seeded.
 
-## Run locally (no Docker)
-
-```powershell
-cd backend
-npm install
-$env:PGPASSWORD='postgres'
-node scripts/init-db.js   # create + seed nodejs_applications (idempotent)
-node src/server.js        # API on http://127.0.0.1:3000
-npm test                  # backend tests (node:test + supertest)
-```
-
 ## Run with Docker (single container)
 
 ```powershell
